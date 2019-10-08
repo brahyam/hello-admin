@@ -1,26 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Admin, Resource, ListGuesser, EditGuesser } from 'react-admin';
+import { restClient, authClient } from 'ra-data-feathers';
+import feathersClient from './feathersClient';
+import { ItemList } from './items';
+import { UserList } from './users';
+import customRoutes from './customRoutes';
+import Login from './Login';
+
+const authClientOptions = {
+  storageKey: 'feathers-jwt',
+  authenticate: {strategy: 'local'}
+};
+
+const options = {id: '_id'};
 
 class App extends Component {
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Admin
+        title="XLedger"
+        customRoutes={customRoutes}
+        loginPage={Login}
+        dataProvider={restClient(feathersClient, options)}
+        authProvider={authClient(feathersClient, authClientOptions)}>
+
+        <Resource name="items" list={ItemList}/>
+        <Resource name="users" list={UserList}/>
+        <Resource name="logs" list={ListGuesser}/>
+
+      </Admin>
     );
   }
 }
